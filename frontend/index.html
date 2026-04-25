@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymHub - Your Fitness Destination</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>💪 GymHub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="pages/memberships.html" class="nav-link">Memberships</a></li>
+                <li><a href="pages/classes.html" class="nav-link">Classes</a></li>
+                <li><a href="pages/trainers.html" class="nav-link">Trainers</a></li>
+                <li><a href="pages/gallery.html" class="nav-link">Gallery</a></li>
+                <li><a href="pages/contact.html" class="nav-link">Contact</a></li>
+                <li><a href="pages/login.html" class="nav-link btn-login">Login</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content animate-fade-in">
+            <h1>Welcome to GymHub</h1>
+            <p>Transform Your Body, Transform Your Life</p>
+            <a href="pages/memberships.html" class="btn btn-primary btn-large">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features container">
+        <h2 class="section-title">Why Choose GymHub?</h2>
+        <div class="features-grid">
+            <div class="feature-card animate-slide-up">
+                <h3>🏋️ Modern Equipment</h3>
+                <p>State-of-the-art fitness equipment and facilities</p>
+            </div>
+            <div class="feature-card animate-slide-up">
+                <h3>👨‍🏫 Expert Trainers</h3>
+                <p>Certified professionals to guide your fitness journey</p>
+            </div>
+            <div class="feature-card animate-slide-up">
+                <h3>📅 Flexible Classes</h3>
+                <p>Various classes at convenient times for everyone</p>
+            </div>
+            <div class="feature-card animate-slide-up">
+                <h3>💳 Affordable Plans</h3>
+                <p>Flexible membership options for all budgets</p>
+            </div>
+            <div class="feature-card animate-slide-up">
+                <h3>🌐 Online Access</h3>
+                <p>Book classes and manage your membership online</p>
+            </div>
+            <div class="feature-card animate-slide-up">
+                <h3>🏆 Results Guaranteed</h3>
+                <p>Join thousands of members who achieved their goals</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Membership Section -->
+    <section class="memberships-preview container">
+        <h2 class="section-title">Our Membership Plans</h2>
+        <div class="membership-cards" id="membershipCards">
+            <!-- Loaded from API -->
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="pages/memberships.html" class="btn btn-secondary">View All Plans</a>
+        </div>
+    </section>
+
+    <!-- Classes Preview -->
+    <section class="classes-preview container">
+        <h2 class="section-title">Popular Classes</h2>
+        <div class="classes-grid" id="classesGrid">
+            <!-- Loaded from API -->
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials container">
+        <h2 class="section-title">Member Testimonials</h2>
+        <div class="testimonials-slider" id="testimonialsSlider">
+            <!-- Loaded from API -->
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Ready to Start Your Fitness Journey?</h2>
+        <p>Join GymHub today and transform your life</p>
+        <a href="pages/memberships.html" class="btn btn-primary btn-large">Join Now</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>GymHub</h4>
+                <p>Your ultimate fitness destination</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="pages/memberships.html">Memberships</a></li>
+                    <li><a href="pages/classes.html">Classes</a></li>
+                    <li><a href="pages/trainers.html">Trainers</a></li>
+                    <li><a href="pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: contact@gymhub.com</p>
+                <p>Phone: +91 9999999999</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 GymHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Load memberships
+        async function loadMemberships() {
+            try {
+                const response = await apiCall('/memberships', 'GET');
+                if (response && response.memberships) {
+                    const container = document.getElementById('membershipCards');
+                    container.innerHTML = response.memberships.slice(0, 3).map(m => `
+                        <div class="card animate-slide-up">
+                            <h3>${m.name}</h3>
+                            <p class="price">₹${m.price}/month</p>
+                            <ul class="features-list">
+                                ${m.features.slice(0, 3).map(f => `<li>✓ ${f}</li>`).join('')}
+                            </ul>
+                            <a href="pages/memberships.html" class="btn btn-secondary btn-small">View Details</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading memberships:', error);
+            }
+        }
+
+        // Load classes
+        async function loadClasses() {
+            try {
+                const response = await apiCall('/classes', 'GET');
+                if (response && response.classes) {
+                    const container = document.getElementById('classesGrid');
+                    container.innerHTML = response.classes.slice(0, 3).map(c => `
+                        <div class="card animate-slide-up">
+                            <h3>${c.name}</h3>
+                            <p><strong>Level:</strong> ${c.level}</p>
+                            <p><strong>Duration:</strong> ${c.duration} min</p>
+                            <p>${c.description}</p>
+                            <a href="pages/classes.html" class="btn btn-secondary btn-small">Book Class</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading classes:', error);
+            }
+        }
+
+        // Load testimonials
+        async function loadTestimonials() {
+            try {
+                const response = await apiCall('/testimonials', 'GET');
+                if (response && response.testimonials) {
+                    const container = document.getElementById('testimonialsSlider');
+                    container.innerHTML = response.testimonials.slice(0, 3).map(t => `
+                        <div class="testimonial-card animate-slide-up">
+                            <p class="rating">${'⭐'.repeat(t.rating)}</p>
+                            <p>"${t.message}"</p>
+                            <p class="author">- ${t.name}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+            }
+        }
+
+        // Load all on page load
+        window.addEventListener('load', () => {
+            loadMemberships();
+            loadClasses();
+            loadTestimonials();
+        });
+    </script>
+</body>
+</html>

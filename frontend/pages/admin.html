@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GymHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <style>
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #DDD;
+        }
+        .tab-button {
+            padding: 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: color 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>💪 GymHub Admin</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="../index.html" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link" onclick="logout()">Logout</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="container" style="padding: 3rem 2rem;">
+        <h1>Admin Dashboard</h1>
+        
+        <!-- Stats -->
+        <div class="dashboard-container">
+            <div class="stat-card">
+                <h3 id="totalUsers">0</h3>
+                <p>Total Users</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalBookings">0</h3>
+                <p>Total Bookings</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalMessages">0</h3>
+                <p>Contact Messages</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="users">Users</button>
+            <button class="tab-button" data-tab="messages">Messages</button>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="users" class="tab-content active card">
+            <h2>Users</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable">
+                    <!-- Loaded from API -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages" class="tab-content card">
+            <h2>Contact Messages</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="messagesTable">
+                    <!-- Loaded from API -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2026 GymHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Check admin access
+        window.addEventListener('load', async () => {
+            if (!isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadDashboard();
+        });
+
+        async function loadDashboard() {
+            // Load stats
+            const dashResponse = await apiCall('/admin/dashboard', 'GET');
+            if (dashResponse) {
+                document.getElementById('totalUsers').textContent = dashResponse.total_users;
+                document.getElementById('totalBookings').textContent = dashResponse.total_bookings;
+                document.getElementById('totalMessages').textContent = dashResponse.total_messages;
+            }
+
+            // Load users
+            const usersResponse = await apiCall('/admin/users', 'GET');
+            if (usersResponse && usersResponse.users) {
+                const tbody = document.getElementById('usersTable');
+                tbody.innerHTML = usersResponse.users.map(u => `
+                    <tr>
+                        <td>${u.name}</td>
+                        <td>${u.email}</td>
+                        <td>${u.phone}</td>
+                        <td>${u.role}</td>
+                    </tr>
+                `).join('');
+            }
+
+            // Load messages
+            const messagesResponse = await apiCall('/admin/messages', 'GET');
+            if (messagesResponse && messagesResponse.messages) {
+                const tbody = document.getElementById('messagesTable');
+                tbody.innerHTML = messagesResponse.messages.map(m => `
+                    <tr>
+                        <td>${m.name}</td>
+                        <td>${m.email}</td>
+                        <td>${m.subject}</td>
+                        <td>
+                            <select onchange="updateMessageStatus('${m.id}', this.value)">
+                                <option value="new" ${m.status === 'new' ? 'selected' : ''}>New</option>
+                                <option value="replied" ${m.status === 'replied' ? 'selected' : ''}>Replied</option>
+                                <option value="closed" ${m.status === 'closed' ? 'selected' : ''}>Closed</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        async function updateMessageStatus(messageId, status) {
+            const response = await apiCall(`/admin/messages/${messageId}/status`, 'PUT', { status });
+            if (response) {
+                showAlert('Status updated', 'success');
+            }
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.dataset.tab;
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

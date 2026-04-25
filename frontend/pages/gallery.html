@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - GymHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 1rem;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .gallery-item:hover .gallery-item-info {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>💪 GymHub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="../index.html" class="nav-link">Home</a></li>
+                <li><a href="memberships.html" class="nav-link">Memberships</a></li>
+                <li><a href="classes.html" class="nav-link">Classes</a></li>
+                <li><a href="trainers.html" class="nav-link">Trainers</a></li>
+                <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="login.html" class="nav-link btn-login">Login</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Gallery</h2>
+            <p>See our facilities and member transformations</p>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="container">
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Loaded from API -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>GymHub</h4>
+                <p>Your ultimate fitness destination</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="memberships.html">Memberships</a></li>
+                    <li><a href="classes.html">Classes</a></li>
+                    <li><a href="trainers.html">Trainers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: contact@gymhub.com</p>
+                <p>Phone: +91 9999999999</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 GymHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        async function loadGallery() {
+            const response = await apiCall('/gallery', 'GET');
+            if (response && response.images) {
+                const container = document.getElementById('galleryGrid');
+                container.innerHTML = response.images.map(img => `
+                    <div class="gallery-item animate-slide-up">
+                        <img src="${img.url}" alt="${img.title}">
+                        <div class="gallery-item-info">
+                            <h4>${img.title}</h4>
+                            <p>${img.description}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.addEventListener('load', loadGallery);
+    </script>
+</body>
+</html>

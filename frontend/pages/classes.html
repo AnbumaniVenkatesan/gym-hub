@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classes - GymHub</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/animations.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>💪 GymHub</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="../index.html" class="nav-link">Home</a></li>
+                <li><a href="memberships.html" class="nav-link">Memberships</a></li>
+                <li><a href="classes.html" class="nav-link">Classes</a></li>
+                <li><a href="trainers.html" class="nav-link">Trainers</a></li>
+                <li><a href="gallery.html" class="nav-link">Gallery</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+                <li><a href="login.html" class="nav-link btn-login">Login</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Our Classes</h2>
+            <p>Find the perfect class for your fitness journey</p>
+        </div>
+    </section>
+
+    <!-- Classes Section -->
+    <section class="container">
+        <div class="classes-grid" id="classesGrid">
+            <!-- Loaded from API -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>GymHub</h4>
+                <p>Your ultimate fitness destination</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="memberships.html">Memberships</a></li>
+                    <li><a href="classes.html">Classes</a></li>
+                    <li><a href="trainers.html">Trainers</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: contact@gymhub.com</p>
+                <p>Phone: +91 9999999999</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 GymHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        async function loadClasses() {
+            const response = await apiCall('/classes', 'GET');
+            if (response && response.classes) {
+                const container = document.getElementById('classesGrid');
+                container.innerHTML = response.classes.map(c => `
+                    <div class="card animate-slide-up">
+                        <h3>${c.name}</h3>
+                        <p>${c.description}</p>
+                        <p><strong>Level:</strong> ${c.level}</p>
+                        <p><strong>Duration:</strong> ${c.duration} minutes</p>
+                        <p><strong>Capacity:</strong> ${c.capacity} members</p>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="bookClass('${c.id}')">Book Class</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function bookClass(classId) {
+            if (!isLoggedIn()) {
+                showAlert('Please login to book a class', 'error');
+                window.location.href = 'login.html';
+                return;
+            }
+            // Booking logic would go here
+            showAlert('Class booked successfully!', 'success');
+        }
+
+        window.addEventListener('load', loadClasses);
+    </script>
+</body>
+</html>
